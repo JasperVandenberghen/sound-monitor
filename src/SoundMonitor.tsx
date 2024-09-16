@@ -8,10 +8,9 @@ const SoundMonitor: React.FC = () => {
   const [alarmPlayed, setAlarmPlayed] = useState<boolean>(false);
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [soundPlaying, setSoundPlaying] = useState<boolean>(false);
-  const [monitoring, setMonitoring] = useState<boolean>(false); // Track whether monitoring is active
-  const alarmSound = new Audio('/alarm.mp3'); // Path to your alarm sound
+  const [monitoring, setMonitoring] = useState<boolean>(false);
+  const alarmSound = new Audio('/alarm.mp3'); 
 
-  // Function to start/stop monitoring
   const toggleMonitoring = () => {
     if (monitoring) {
       // Stop monitoring
@@ -20,10 +19,10 @@ const SoundMonitor: React.FC = () => {
       setShowWarning(false);
       if (soundPlaying) {
         alarmSound.pause();
-        alarmSound.currentTime = 0; // Reset sound to the start
+        alarmSound.currentTime = 0; 
       }
     } else {
-      // Start monitoring
+
       setMonitoring(true);
     }
   };
@@ -43,7 +42,7 @@ const SoundMonitor: React.FC = () => {
           microphone.connect(analyser);
 
           const checkSoundLevel = () => {
-            if (!monitoring) return; // Stop measuring if monitoring is stopped
+            if (!monitoring) return;
 
             analyser.getByteFrequencyData(dataArray);
             const sum = dataArray.reduce((a, b) => a + b, 0);
