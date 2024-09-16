@@ -9,7 +9,6 @@ const SoundMonitor: React.FC = () => {
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const [soundPlaying, setSoundPlaying] = useState<boolean>(false);
   const [monitoring, setMonitoring] = useState<boolean>(false); // Track whether monitoring is active
-  const [peak, setPeak] = useState<number>(0); // State to track the highest dB value
   const alarmSound = new Audio('/alarm.mp3'); // Path to your alarm sound
 
   // Function to start/stop monitoring
@@ -53,18 +52,13 @@ const SoundMonitor: React.FC = () => {
 
             setSoundLevel(dB);
 
-            // Update peak value if the current dB is higher
-            if (dB > peak) {
-              setPeak(dB);
-            }
-
             if (dB > threshold && !alarmPlayed) {
               setAlarm(true);
               setAlarmPlayed(true);
               setShowWarning(true);
             } else if (dB <= threshold) {
               setAlarm(false);
-              setAlarmPlayed(false); // Reset alarmPlayed to allow future triggers
+              setAlarmPlayed(false); 
               setShowWarning(false);
             }
 
@@ -79,7 +73,7 @@ const SoundMonitor: React.FC = () => {
 
       getMicrophoneAccess();
     }
-  }, [monitoring, alarmPlayed, threshold, peak]);
+  }, [monitoring, alarmPlayed, threshold]);
 
   useEffect(() => {
     if (alarm && !soundPlaying && monitoring) {
@@ -88,7 +82,7 @@ const SoundMonitor: React.FC = () => {
         setTimeout(() => {
           setShowWarning(false);
           setSoundPlaying(false);
-        }, 16000); // Duration for the alarm sound
+        }, 8000);
       }).catch(err => console.error('Error playing sound:', err));
     }
   }, [alarm, alarmSound, soundPlaying, monitoring]);
@@ -105,12 +99,11 @@ const SoundMonitor: React.FC = () => {
     };
   }, [alarmSound]);
 
-  // Handle user input change, but don't update the threshold directly
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputThreshold(Number(event.target.value));
   };
 
-  // Update the threshold only when the submit button is clicked
+
   const handleThresholdSubmit = () => {
     setThreshold(inputThreshold);
   };
@@ -118,8 +111,12 @@ const SoundMonitor: React.FC = () => {
   return (
     <div>
       <h1>Sound Level Monitor</h1>
+
+      <button onClick={toggleMonitoring}>
+        {monitoring ? 'Stop Monitoring' : 'Start Monitoring'}
+      </button>
+
       <p>Current sound level: {soundLevel} dB</p>
-      <p>Peak sound level: {peak} dB</p> {/* Display the peak value */}
       {showWarning && <p>Alarm! Sound level is too high!</p>}
 
       <label>
@@ -128,19 +125,16 @@ const SoundMonitor: React.FC = () => {
           type="number"
           min="0"
           max="120"
-          value={inputThreshold} // Use inputThreshold for the input field
+          value={inputThreshold} 
           onChange={handleInputChange}
         />
       </label>
       <button onClick={handleThresholdSubmit}>Submit</button>
       <p>Threshold: {threshold}</p>
 
-      {/* Start/Stop button for monitoring */}
-      <button onClick={toggleMonitoring}>
-        {monitoring ? 'Stop Monitoring' : 'Start Monitoring'}
-      </button>
 
-      {/* Display monitoring state */}
+
+
       <p>{monitoring ? 'Monitoring is ACTIVE' : 'Monitoring is STOPPED'}</p>
     </div>
   );
